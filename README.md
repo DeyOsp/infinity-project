@@ -1,1 +1,1 @@
-## Ininity Project
+## Infinity Project
