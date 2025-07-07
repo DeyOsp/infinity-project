@@ -1,8 +1,31 @@
-import { Card, CardContent } from "@components/ui/card"
-import { Badge } from "@components/ui/badge"
+import { Card, CardContent } from "@components/ui/card";
+import { Badge } from "@components/ui/badge";
+import { useState, useEffect } from "react";
+import axios from "axios";
 
 // eslint-disable-next-line react/prop-types
-export function Collaborators({ collaborators }) {
+export function Collaborators({ urlApi }) {
+  const [collaborators, setCollaborators] = useState([]);
+
+  function getCollaborators() {
+    axios
+      .get(`${urlApi}manager/g/collaborators`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+      .then((response) => {
+        setCollaborators(response.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }
+
+  useEffect(() => {
+    getCollaborators();
+  }, []);
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -22,7 +45,7 @@ export function Collaborators({ collaborators }) {
                 </div>
                 <div>
                   <h3 className="font-semibold">{collaborator.name}</h3>
-                  <Badge variant="secondary">{collaborator.role}</Badge>
+                  <Badge variant="secondary">{collaborator.department}</Badge>
                 </div>
               </div>
             </CardContent>
@@ -30,5 +53,5 @@ export function Collaborators({ collaborators }) {
         ))}
       </div>
     </div>
-  )
+  );
 }

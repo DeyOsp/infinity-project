@@ -74,28 +74,6 @@ const initialActiveProjects = [
   },
 ];
 
-const initialFreelanceProjects = [
-  {
-    id: 1,
-    name: "Sitio web del restaurante",
-    description: "Sitio web de restaurante moderno con pedidos en línea",
-    progress: 45,
-    type: "freelance",
-  },
-  {
-    id: 2,
-    name: "Sitio de portafolio",
-    description: "Portafolio personal para un fotógrafo",
-    progress: 90,
-    type: "freelance",
-  },
-];
-
-const collaborators = [
-  { id: 1, name: "Deymer Ospina", role: "Frontend Developer" },
-  { id: 2, name: "Daniel Muñoz", role: "Backend Developer" },
-];
-
 const initialTasks = {
   pending: [
     {
@@ -124,21 +102,14 @@ const initialTasks = {
 };
 
 export default function Dashboard2() {
+  const urlApi = "http://localhost:3000/infinity-manager/server/v1/";
+
   const [activeView, setActiveView] = useState("project-ideas");
   const [selectedProject, setSelectedProject] = useState(null);
   const [projectIdeas, setProjectIdeas] = useState(initialProjectIdeas);
   const [activeProjects, setActiveProjects] = useState(initialActiveProjects);
-  const [freelanceProjects, setFreelanceProjects] = useState(
-    initialFreelanceProjects
-  );
   const [tasks, setTasks] = useState(initialTasks);
   const [filters, setFilters] = useState({ status: "all", type: "all" });
-
-  const getStatusLabel = (progress) => {
-    if (progress <= 25) return { label: "Empezando", color: "bg-blue-500" };
-    if (progress <= 75) return { label: "En curso", color: "bg-yellow-500" };
-    return { label: "Finalizando", color: "bg-green-500" };
-  };
 
   const handleAddProjectIdea = (idea) => {
     setProjectIdeas([
@@ -165,23 +136,10 @@ export default function Dashboard2() {
     setProjectIdeas(projectIdeas.filter((p) => p.id !== idea.id));
   };
 
-  const handleAddFreelanceProject = (project) => {
-    setFreelanceProjects([
-      ...freelanceProjects,
-      {
-        id: Date.now(),
-        name: project.name,
-        description: project.description,
-        progress: 0,
-        type: "freelance",
-      },
-    ]);
-  };
-
-  const handleViewProject = (project) => {
-    setSelectedProject(project);
-    setActiveView("project-detail");
-  };
+  // const handleViewProject = (project) => {
+  //   setSelectedProject(project);
+  //   setActiveView("project-detail");
+  // };
 
   const handleAddTask = (task) => {
     setTasks({
@@ -214,27 +172,6 @@ export default function Dashboard2() {
     setSelectedProject(null);
   };
 
-  const filteredActiveProjects = activeProjects.filter((project) => {
-    if (filters.status !== "all") {
-      const status = getStatusLabel(project.progress)
-        .label.toLowerCase()
-        .replace(" ", "-");
-      if (filters.status !== status) return false;
-    }
-    if (filters.type !== "all" && filters.type !== project.type) return false;
-    return true;
-  });
-
-  const filteredFreelanceProjects = freelanceProjects.filter((project) => {
-    if (filters.status !== "all") {
-      const status = getStatusLabel(project.progress)
-        .label.toLowerCase()
-        .replace(" ", "-");
-      if (filters.status !== status) return false;
-    }
-    return true;
-  });
-
   const sidebarItems = [
     { id: "project-ideas", title: "Ideas de proyectos", icon: Lightbulb },
     { id: "active-projects", title: "Proyectos activos", icon: FolderOpen },
@@ -245,40 +182,24 @@ export default function Dashboard2() {
   const renderContent = () => {
     switch (activeView) {
       case "project-ideas":
-        return (
-          <ProjectIdeas
-            projectIdeas={projectIdeas}
-            onAddIdea={handleAddProjectIdea}
-            onActivateIdea={handleActivateIdea}
-          />
-        );
+        return <ProjectIdeas urlApi={urlApi} />;
       case "active-projects":
-        return (
-          <ActiveProjects
-            projects={filteredActiveProjects}
-            onViewProject={handleViewProject}
-          />
-        );
+        return <ActiveProjects urlApi={urlApi} />;
       case "project-detail":
         return (
           <ProjectDetail
             project={selectedProject}
             tasks={tasks}
-            collaborators={collaborators}
+            // collaborators={collaborators}
             onAddTask={handleAddTask}
             onMoveTask={handleMoveTask}
             onBack={handleBackToProjects}
           />
         );
       case "freelance-projects":
-        return (
-          <FreelanceProjects
-            projects={filteredFreelanceProjects}
-            onAddProject={handleAddFreelanceProject}
-          />
-        );
+        return <FreelanceProjects urlApi={urlApi} />;
       case "collaborators":
-        return <Collaborators collaborators={collaborators} />;
+        return <Collaborators urlApi={urlApi} />;
       default:
         return (
           <ProjectIdeas

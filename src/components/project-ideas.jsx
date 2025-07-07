@@ -1,27 +1,123 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Plus, ArrowRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+} from "@components/ui/card";
+import { Input } from "@components/ui/input";
+import { Label } from "@components/ui/label";
+import { Textarea } from "@components/ui/textarea";
+import axios from "axios";
+import { toast } from "sonner";
 
 // eslint-disable-next-line react/prop-types
-export function ProjectIdeas({ projectIdeas, onAddIdea, onActivateIdea }) {
-  const [newIdea, setNewIdea] = useState({ title: "", description: "" });
+export function ProjectIdeas({ urlApi }) {
+  const [listIdeas, setListIdeas] = useState([]);
+  // const [error, setError] = useState("");
+  // const [loading, setLoading] = useState("");
+  const [ideaTitle, setIdeaTitle] = useState("");
+  const [ideaDescription, setIdeaDescription] = useState("");
 
-  const handleAddIdea = () => {
-    if (newIdea.title && newIdea.description) {
-      onAddIdea(newIdea);
-      setNewIdea({ title: "", description: "" });
-    }
-  };
+  function getProjectIdea() {
+    axios
+      .get(`${urlApi}manager/g/project-idea`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+      .then((response) => {
+        setListIdeas(response.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }
+
+  async function handleAddProjectIdea() {
+    // setLoading(true);
+    // setError("");
+
+    const project_idea = {
+      title: ideaTitle,
+      description: ideaDescription,
+      type_id: 1,
+    };
+
+    toast.promise(
+      axios
+        .post(`${urlApi}manager/i/add-project-idea`, project_idea, {
+          headers: {
+            "Content-Type": "application/json",
+            // "api-key": apiKey,
+          },
+        })
+        .then((response) => {
+          if (response.data.success) {
+            setIdeaTitle("");
+            setIdeaDescription("");
+            // setLoading(false);
+            getProjectIdea();
+            return "Idea agregada con éxito";
+          } else {
+            throw new Error(
+              "Error al agregar la idea: " + response.data.message
+            );
+          }
+        }),
+      {
+        loading: "Guardando cambios...",
+        success: (msg) => msg,
+        error: (err) => err.message || "Error en la solicitud de guardado",
+      }
+    );
+  }
+
+  async function handleActivateProject(idActivate) {
+    debugger;
+    // if (!idActivate) {
+    //   setError("No hay un curso válido para actualizar");
+    //   return;
+    // }
+
+    // setLoading(true);
+    // setError("");
+
+    const activate = {
+      id: idActivate,
+    };
+
+    toast.promise(
+      axios
+        .put(`${urlApi}manager/u/active-idea`, activate, {
+          headers: {
+            "Content-Type": "application/json",
+            // "api-key": apiKey,
+          },
+        })
+        .then((response) => {
+          if (response.data.success) {
+            // setLoading(false);
+            getProjectIdea();
+            return "Idea activada con éxito";
+          } else {
+            throw new Error("Error al activar la idea");
+          }
+        }),
+      {
+        loading: "Activando idea...",
+        success: (msg) => msg,
+        error: (err) => err.message || "Error en la solicitud de activación",
+      }
+    );
+  }
+
+  useEffect(() => {
+    getProjectIdea();
+  }, []);
 
   return (
     <div className="space-y-6">
@@ -41,10 +137,8 @@ export function ProjectIdeas({ projectIdeas, onAddIdea, onActivateIdea }) {
             <Label htmlFor="idea-title">Título</Label>
             <Input
               id="idea-title"
-              value={newIdea.title}
-              onChange={(e) =>
-                setNewIdea({ ...newIdea, title: e.target.value })
-              }
+              value={ideaTitle}
+              onChange={(e) => setIdeaTitle(e.target.value)}
               placeholder="Introduzca el título del proyecto"
             />
           </div>
@@ -52,16 +146,14 @@ export function ProjectIdeas({ projectIdeas, onAddIdea, onActivateIdea }) {
             <Label htmlFor="idea-description">Descripción</Label>
             <Textarea
               id="idea-description"
-              value={newIdea.description}
-              onChange={(e) =>
-                setNewIdea({ ...newIdea, description: e.target.value })
-              }
+              value={ideaDescription}
+              onChange={(e) => setIdeaDescription(e.target.value)}
               placeholder="Describe your project idea"
             />
           </div>
           <Button
-            onClick={handleAddIdea}
-            disabled={!newIdea.title.trim() || !newIdea.description.trim()}
+            onClick={handleAddProjectIdea}
+            disabled={!ideaTitle.trim() || !ideaDescription.trim()}
             className="w-full"
           >
             <Plus className="w-4 h-4 mr-2" />
@@ -71,14 +163,18 @@ export function ProjectIdeas({ projectIdeas, onAddIdea, onActivateIdea }) {
       </Card>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {projectIdeas.map((idea) => (
+        {/* eslint-disable-next-line react/prop-types */}
+        {listIdeas.map((idea) => (
           <Card key={idea.id}>
             <CardHeader>
               <CardTitle className="text-lg">{idea.title}</CardTitle>
               <CardDescription>{idea.description}</CardDescription>
             </CardHeader>
             <CardContent>
-              <Button onClick={() => onActivateIdea(idea)} className="w-full">
+              <Button
+                onClick={() => handleActivateProject(idea.id)}
+                className="w-full"
+              >
                 <ArrowRight className="w-4 h-4 mr-2" />
                 Activar
               </Button>
