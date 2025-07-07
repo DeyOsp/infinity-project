@@ -13,7 +13,8 @@ export default defineConfig({
       '@routes': path.resolve(__dirname, 'src/routes'),
       '@utils': path.resolve(__dirname, 'src/utils'),
       '@ui': path.resolve(__dirname, 'src/components/ui'),
-      '@lib': path.resolve(__dirname, 'src/lib')
+      '@lib': path.resolve(__dirname, 'src/lib'),
+      '@hooks': path.resolve(__dirname, 'src/hooks')
     },
   },
 })
