@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 
 // eslint-disable-next-line react/prop-types
-export function Collaborators({ urlApi }) {
+export default function Collaborators({ urlApi }) {
   const [collaborators, setCollaborators] = useState([]);
 
   function getCollaborators() {

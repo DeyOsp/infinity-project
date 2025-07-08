@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import { useState } from "react";
 import { Plus, MoreHorizontal } from "lucide-react";
 import { Button } from "@components/ui/button";
@@ -19,7 +20,8 @@ import {
   DropdownMenuTrigger,
 } from "@components/ui/dropdown-menu";
 
-export function ProjectDetail({
+
+export default function ProjectDetail({
   project,
   tasks,
   collaborators,

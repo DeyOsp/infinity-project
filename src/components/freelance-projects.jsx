@@ -17,7 +17,7 @@ import axios from "axios";
 import { toast } from "sonner";
 
 // eslint-disable-next-line react/prop-types
-export function FreelanceProjects({ urlApi }) {
+export default function FreelanceProjects({ urlApi }) {
 
   const [listFreelance, setListFreelance] = useState([]);
   // const [error, setError] = useState("");

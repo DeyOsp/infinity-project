@@ -24,11 +24,11 @@ import {
   SidebarTrigger,
 } from "@components/ui/sidebar";
 
-import { ProjectIdeas } from "@components/project-ideas";
-import { ActiveProjects } from "@components/active-projects";
-import { FreelanceProjects } from "@components/freelance-projects";
-import { ProjectDetail } from "@components/project-detail";
-import { Collaborators } from "@components/collaborators";
+import ProjectIdeas from "@components/project-ideas";
+import ActiveProjects from "@components/active-projects";
+import FreelanceProjects from "@components/freelance-projects";
+import ProjectDetail from "@components/project-detail";
+import Collaborators from "@components/collaborators";
 
 // Sample data
 const initialProjectIdeas = [
