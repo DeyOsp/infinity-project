@@ -19,7 +19,7 @@ import {
   DropdownMenuTrigger,
 } from "@components/ui/dropdown-menu";
 
-export function FreelanceDetail({
+export default function FreelanceDetail({
   project,
   tasks,
   collaborators,

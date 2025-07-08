@@ -15,7 +15,7 @@ import axios from "axios";
 import { toast } from "sonner";
 
 // eslint-disable-next-line react/prop-types
-export function ProjectIdeas({ urlApi }) {
+export default function ProjectIdeas({ urlApi }) {
   const [listIdeas, setListIdeas] = useState([]);
   // const [error, setError] = useState("");
   // const [loading, setLoading] = useState("");
@@ -77,7 +77,6 @@ export function ProjectIdeas({ urlApi }) {
   }
 
   async function handleActivateProject(idActivate) {
-    debugger;
     // if (!idActivate) {
     //   setError("No hay un curso válido para actualizar");
     //   return;
@@ -114,6 +113,13 @@ export function ProjectIdeas({ urlApi }) {
       }
     );
   }
+
+  const handleConfirmActive = (idActivate) => {
+    const confirmed = window.confirm("¿Estás seguro de activar esta idea?");
+    if (confirmed) {
+      handleActivateProject(idActivate);
+    }
+  };
 
   useEffect(() => {
     getProjectIdea();
@@ -172,7 +178,7 @@ export function ProjectIdeas({ urlApi }) {
             </CardHeader>
             <CardContent>
               <Button
-                onClick={() => handleActivateProject(idea.id)}
+                onClick={() => handleConfirmActive(idea.id)}
                 className="w-full"
               >
                 <ArrowRight className="w-4 h-4 mr-2" />

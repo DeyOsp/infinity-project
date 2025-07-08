@@ -13,7 +13,7 @@ import { Badge } from "@components/ui/badge";
 import axios from "axios";
 
 // eslint-disable-next-line react/prop-types
-export function ActiveProjects({ urlApi }) {
+export default function ActiveProjects({ urlApi, onViewDetails }) {
   const [listActive, setListActive] = useState([]);
 
   function getProjectActive() {
@@ -32,7 +32,7 @@ export function ActiveProjects({ urlApi }) {
   }
 
   const getStatusLabel = (progress) => {
-    if (progress <= 25) return { label: "Empezando", color: "bg-blue-500" };
+    if (progress <= 25) return { label: "Iniciado", color: "bg-blue-500" };
     if (progress <= 75) return { label: "En curso", color: "bg-yellow-500" };
     return { label: "Finalizando", color: "bg-green-500" };
   };
@@ -73,7 +73,7 @@ export function ActiveProjects({ urlApi }) {
                   <Progress value={project.progress} />
                 </div>
                 <Button
-                  // onClick={() => onViewProject(project)}
+                  onClick={() => onViewDetails(project)}
                   className="w-full"
                 >
                   <Eye className="w-4 h-4 mr-2" />
