@@ -114,12 +114,12 @@ export default function ProjectIdeas({ urlApi }) {
     );
   }
 
-  const handleConfirmDelete = (idActivate) => {
-  const confirmed = window.confirm("¿Estás seguro de eliminar este elemento?");
-  if (confirmed) {
-    handleActivateProject(idActivate)
-  }
-};
+  const handleConfirmActive = (idActivate) => {
+    const confirmed = window.confirm("¿Estás seguro de activar esta idea?");
+    if (confirmed) {
+      handleActivateProject(idActivate);
+    }
+  };
 
   useEffect(() => {
     getProjectIdea();
@@ -178,7 +178,7 @@ export default function ProjectIdeas({ urlApi }) {
             </CardHeader>
             <CardContent>
               <Button
-                onClick={() => handleConfirmDelete(idea.id)}
+                onClick={() => handleConfirmActive(idea.id)}
                 className="w-full"
               >
                 <ArrowRight className="w-4 h-4 mr-2" />
