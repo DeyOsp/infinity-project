@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Users, Lightbulb, FolderOpen, Briefcase, Filter } from "lucide-react";
 
 import { Label } from "@components/ui/label";
@@ -24,192 +24,100 @@ import {
   SidebarTrigger,
 } from "@components/ui/sidebar";
 
-import { ProjectIdeas } from "@components/project-ideas";
-import { ActiveProjects } from "@components/active-projects";
-import { FreelanceProjects } from "@components/freelance-projects";
-import { ProjectDetail } from "@components/project-detail";
-import { Collaborators } from "@components/collaborators";
+import ProjectIdeas from "@components/project-ideas";
+import ActiveProjects from "@components/active-projects";
+import FreelanceProjects from "@components/freelance-projects";
+import ProjectDetail from "@components/project-detail";
+import Collaborators from "@components/collaborators";
+import axios from "axios";
 
-// Sample data
-const initialProjectIdeas = [
-  {
-    id: 1,
-    title: "Programador de tareas con tecnología de IA",
-    description:
-      "Un sistema de programación de tareas inteligente que aprende del comportamiento del usuario",
-  },
-  {
-    id: 2,
-    title: "Pizarra colaborativa",
-    description: "Pizarra colaborativa en tiempo real para equipos remotos",
-  },
-  {
-    id: 3,
-    title: "Rastreador de gastos inteligente",
-    description: "Seguimiento automatizado de gastos con escaneo de recibos",
-  },
-];
-
-const initialActiveProjects = [
-  {
-    id: 1,
-    name: "Plataforma de E-commerce",
-    description: "Tienda online moderna con funciones avanzadas",
-    progress: 65,
-    type: "internal",
-  },
-  {
-    id: 2,
-    name: "Aplicación de banca móvil",
-    description: "Solución de banca móvil segura",
-    progress: 30,
-    type: "internal",
-  },
-  {
-    id: 3,
-    name: "Panel de control de atención médica",
-    description: "Sistema de gestión de pacientes",
-    progress: 85,
-    type: "internal",
-  },
-];
-
-const initialTasks = {
-  pending: [
-    {
-      id: 1,
-      name: "Diseño de interfaz de usuario",
-      description: "Crear maquetas para el panel principal",
-      assignee: "Deymer Ospina",
-    },
-  ],
-  inProgress: [
-    {
-      id: 2,
-      name: "Implementar la autenticación",
-      description: "Agregar inicio de sesión y registro de usuario",
-      assignee: "Deymer Ospina",
-    },
-  ],
-  completed: [
-    {
-      id: 3,
-      name: "Configuración del proyecto",
-      description: "Inicializar la estructura del proyecto",
-      assignee: "Deymer Ospina",
-    },
-  ],
-};
-
-export default function Dashboard2() {
+export default function Dashboard() {
   const urlApi = "http://localhost:3000/infinity-manager/server/v1/";
 
   const [activeView, setActiveView] = useState("project-ideas");
   const [selectedProject, setSelectedProject] = useState(null);
-  const [projectIdeas, setProjectIdeas] = useState(initialProjectIdeas);
-  const [activeProjects, setActiveProjects] = useState(initialActiveProjects);
-  const [tasks, setTasks] = useState(initialTasks);
   const [filters, setFilters] = useState({ status: "all", type: "all" });
-
-  const handleAddProjectIdea = (idea) => {
-    setProjectIdeas([
-      ...projectIdeas,
-      {
-        id: Date.now(),
-        title: idea.title,
-        description: idea.description,
-      },
-    ]);
-  };
-
-  const handleActivateIdea = (idea) => {
-    setActiveProjects([
-      ...activeProjects,
-      {
-        id: Date.now(),
-        name: idea.title,
-        description: idea.description,
-        progress: 0,
-        type: "internal",
-      },
-    ]);
-    setProjectIdeas(projectIdeas.filter((p) => p.id !== idea.id));
-  };
-
-  // const handleViewProject = (project) => {
-  //   setSelectedProject(project);
-  //   setActiveView("project-detail");
-  // };
-
-  const handleAddTask = (task) => {
-    setTasks({
-      ...tasks,
-      pending: [
-        ...tasks.pending,
-        {
-          id: Date.now(),
-          name: task.name,
-          description: task.description,
-          assignee: task.assignee,
-        },
-      ],
-    });
-  };
-
-  const handleMoveTask = (taskId, fromColumn, toColumn) => {
-    const task = tasks[fromColumn].find((t) => t.id === taskId);
-    if (task) {
-      setTasks({
-        ...tasks,
-        [fromColumn]: tasks[fromColumn].filter((t) => t.id !== taskId),
-        [toColumn]: [...tasks[toColumn], task],
-      });
-    }
-  };
+  const [collaborators, setCollaborators] = useState([]);
 
   const handleBackToProjects = () => {
     setActiveView("active-projects");
     setSelectedProject(null);
   };
 
+  const handleViewProject = (project) => {
+    setSelectedProject(project);
+    setActiveView("project-detail");
+  };
+
   const sidebarItems = [
-    { id: "project-ideas", title: "Ideas de proyectos", icon: Lightbulb },
-    { id: "active-projects", title: "Proyectos activos", icon: FolderOpen },
-    { id: "freelance-projects", title: "Proyectos freelance", icon: Briefcase },
-    { id: "collaborators", title: "Colaboradores", icon: Users },
+    {
+      id: 1,
+      id_name: "project-ideas",
+      title: "Ideas de proyectos",
+      icon: Lightbulb,
+    },
+    {
+      id: 2,
+      id_name: "active-projects",
+      title: "Proyectos activos",
+      icon: FolderOpen,
+    },
+    {
+      id: 3,
+      id_name: "freelance-projects",
+      title: "Proyectos freelance",
+      icon: Briefcase,
+    },
+    { id: 4, id_name: "collaborators", title: "Colaboradores", icon: Users },
   ];
+
+  function getCollaborators() {
+    axios
+      .get(`${urlApi}manager/g/collaborators`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+      .then((response) => {
+        setCollaborators(response.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }
 
   const renderContent = () => {
     switch (activeView) {
       case "project-ideas":
         return <ProjectIdeas urlApi={urlApi} />;
       case "active-projects":
-        return <ActiveProjects urlApi={urlApi} />;
+        return (
+          <ActiveProjects
+            urlApi={urlApi}
+            onViewDetails={(project) => handleViewProject(project)}
+          />
+        );
       case "project-detail":
         return (
           <ProjectDetail
+            urlApi={urlApi}
             project={selectedProject}
-            tasks={tasks}
-            // collaborators={collaborators}
-            onAddTask={handleAddTask}
-            onMoveTask={handleMoveTask}
-            onBack={handleBackToProjects}
+            onBack={() => handleBackToProjects()}
+            collaborators={collaborators}
           />
         );
       case "freelance-projects":
         return <FreelanceProjects urlApi={urlApi} />;
       case "collaborators":
-        return <Collaborators urlApi={urlApi} />;
+        return <Collaborators urlApi={urlApi} collaborators={collaborators} />;
       default:
-        return (
-          <ProjectIdeas
-            projectIdeas={projectIdeas}
-            onAddIdea={handleAddProjectIdea}
-            onActivateIdea={handleActivateIdea}
-          />
-        );
+        return <ProjectIdeas urlApi={urlApi} />;
     }
   };
+
+  useEffect(() => {
+    getCollaborators();
+  }, []);
 
   return (
     <SidebarProvider>
@@ -225,10 +133,10 @@ export default function Dashboard2() {
             <SidebarGroupContent>
               <SidebarMenu>
                 {sidebarItems.map((item) => (
-                  <SidebarMenuItem key={item.id}>
+                  <SidebarMenuItem key={item.id_name}>
                     <SidebarMenuButton
-                      onClick={() => setActiveView(item.id)}
-                      isActive={activeView === item.id}
+                      onClick={() => setActiveView(item.id_name)}
+                      isActive={activeView === item.id_name}
                     >
                       <item.icon className="w-4 h-4" />
                       <span>{item.title}</span>

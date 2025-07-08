@@ -1,30 +1,8 @@
+/* eslint-disable react/prop-types */
 import { Card, CardContent } from "@components/ui/card";
 import { Badge } from "@components/ui/badge";
-import { useState, useEffect } from "react";
-import axios from "axios";
 
-// eslint-disable-next-line react/prop-types
-export function Collaborators({ urlApi }) {
-  const [collaborators, setCollaborators] = useState([]);
-
-  function getCollaborators() {
-    axios
-      .get(`${urlApi}manager/g/collaborators`, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      })
-      .then((response) => {
-        setCollaborators(response.data);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  }
-
-  useEffect(() => {
-    getCollaborators();
-  }, []);
+export default function Collaborators({ collaborators }) {
 
   return (
     <div className="space-y-6">
