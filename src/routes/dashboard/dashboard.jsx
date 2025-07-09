@@ -38,6 +38,7 @@ export default function Dashboard() {
   const [selectedProject, setSelectedProject] = useState(null);
   const [filters, setFilters] = useState({ status: "all", type: "all" });
   const [collaborators, setCollaborators] = useState([]);
+  const [projectProgress, setProjectProgress] = useState({});
 
   const handleBackToProjects = () => {
     setActiveView("active-projects");
@@ -47,6 +48,13 @@ export default function Dashboard() {
   const handleViewProject = (project) => {
     setSelectedProject(project);
     setActiveView("project-detail");
+  };
+
+  const handleProgressChange = (projectId, progress) => {
+    setProjectProgress((prev) => ({
+      ...prev,
+      [projectId]: progress,
+    }));
   };
 
   const sidebarItems = [
@@ -94,7 +102,8 @@ export default function Dashboard() {
         return (
           <ActiveProjects
             urlApi={urlApi}
-            onViewDetails={(project) => handleViewProject(project)}
+            onViewDetails={handleViewProject}
+            projectProgress={projectProgress}
           />
         );
       case "project-detail":
@@ -104,6 +113,9 @@ export default function Dashboard() {
             project={selectedProject}
             onBack={() => handleBackToProjects()}
             collaborators={collaborators}
+            onProgressChange={(progress) =>
+              handleProgressChange(selectedProject.id, progress)
+            }
           />
         );
       case "freelance-projects":
