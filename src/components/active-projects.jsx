@@ -13,7 +13,7 @@ import { Badge } from "@components/ui/badge";
 import axios from "axios";
 
 // eslint-disable-next-line react/prop-types
-export default function ActiveProjects({ urlApi, onViewDetails }) {
+export default function ActiveProjects({ urlApi, onViewDetails, projectProgress = {} }) {
   const [listActive, setListActive] = useState([]);
 
   function getProjectActive() {
@@ -52,7 +52,9 @@ export default function ActiveProjects({ urlApi, onViewDetails }) {
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {listActive.map((project) => {
-          const status = getStatusLabel(project.progress);
+          const progress = projectProgress[project.id] || 0;
+          const status = getStatusLabel(progress);
+
           return (
             <Card key={project.id}>
               <CardHeader>
@@ -68,9 +70,9 @@ export default function ActiveProjects({ urlApi, onViewDetails }) {
                 <div>
                   <div className="flex justify-between text-sm mb-2">
                     <span>Progreso</span>
-                    <span>{project.progress}%</span>
+                    <span>{progress}%</span>
                   </div>
-                  <Progress value={project.progress} />
+                  <Progress value={progress} />
                 </div>
                 <Button
                   onClick={() => onViewDetails(project)}
