@@ -27,6 +27,7 @@ export default function ProjectDetail({
   project,
   onBack,
   collaborators,
+  onProgressChange, // ✅ nueva prop para enviar el porcentaje al padre
 }) {
   const [taskTitle, setTaskTitle] = useState("");
   const [taskDescription, setTaskDescription] = useState("");
@@ -59,6 +60,19 @@ export default function ProjectDetail({
         });
 
         setTasks(organized);
+
+        // ✅ Calcular porcentaje solo para el front
+        const total =
+          organized.pending.length +
+          organized.inProgress.length +
+          organized.completed.length;
+
+        const completado = organized.completed.length;
+        const porcentaje = total > 0 ? (completado / total) * 100 : 0;
+
+        if (onProgressChange) {
+          onProgressChange(Number(porcentaje.toFixed(2)));
+        }
       })
       .catch((error) => {
         console.error(error);
@@ -66,9 +80,6 @@ export default function ProjectDetail({
   }
 
   async function handleAddTask() {
-    // setLoading(true);
-    // setError("");
-
     const project_task = {
       project_id: project.id,
       title: taskTitle,
@@ -82,7 +93,6 @@ export default function ProjectDetail({
         .post(`${urlApi}manager/i/add-project-task`, project_task, {
           headers: {
             "Content-Type": "application/json",
-            // "api-key": apiKey,
           },
         })
         .then((response) => {
@@ -90,7 +100,6 @@ export default function ProjectDetail({
             setTaskTitle("");
             setTaskDescription("");
             setTaskAssigned("");
-            // setLoading(false);
             getProjectDetails();
             return "Tarea agregada con éxito";
           } else {
@@ -108,14 +117,6 @@ export default function ProjectDetail({
   }
 
   async function onMoveTask(idTask, statusTask) {
-    // if (!idTask || !statusTask) {
-    //   setError("No hay una tarea válida para mover");
-    //   return;
-    // }
-
-    // setLoading(true);
-    // setError("");
-
     const moveIn = {
       id: idTask,
       status: statusTask,
@@ -126,12 +127,10 @@ export default function ProjectDetail({
         .put(`${urlApi}manager/u/status-task`, moveIn, {
           headers: {
             "Content-Type": "application/json",
-            // "api-key": apiKey,
           },
         })
         .then((response) => {
           if (response.data.success) {
-            // setLoading(false);
             getProjectDetails();
             return "Tarea movida con éxito";
           } else {
