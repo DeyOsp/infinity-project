@@ -27,7 +27,7 @@ export default function ProjectDetail({
   project,
   onBack,
   collaborators,
-  onProgressChange, // ✅ nueva prop para enviar el porcentaje al padre
+  onProgressChange,
 }) {
   const [taskTitle, setTaskTitle] = useState("");
   const [taskDescription, setTaskDescription] = useState("");
@@ -61,7 +61,6 @@ export default function ProjectDetail({
 
         setTasks(organized);
 
-        // ✅ Calcular porcentaje solo para el front
         const total =
           organized.pending.length +
           organized.inProgress.length +
