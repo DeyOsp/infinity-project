@@ -119,7 +119,12 @@ export default function Dashboard() {
           />
         );
       case "freelance-projects":
-        return <FreelanceProjects urlApi={urlApi} />;
+        return (
+          <FreelanceProjects
+            urlApi={urlApi}
+            onViewDetails={handleViewProject}
+          />
+        );
       case "collaborators":
         return <Collaborators urlApi={urlApi} collaborators={collaborators} />;
       default:

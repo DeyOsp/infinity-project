@@ -17,8 +17,7 @@ import axios from "axios";
 import { toast } from "sonner";
 
 // eslint-disable-next-line react/prop-types
-export default function FreelanceProjects({ urlApi }) {
-
+export default function FreelanceProjects({ urlApi, onViewDetails }) {
   const [listFreelance, setListFreelance] = useState([]);
   // const [error, setError] = useState("");
   // const [loading, setLoading] = useState("");
@@ -156,7 +155,10 @@ export default function FreelanceProjects({ urlApi }) {
                   </div>
                   <Progress value={project.progress} />
                 </div>
-                <Button className="w-full">
+                <Button
+                  onClick={() => onViewDetails(project)}
+                  className="w-full"
+                >
                   <Eye className="w-4 h-4 mr-2" />
                   Ver detalles
                 </Button>
